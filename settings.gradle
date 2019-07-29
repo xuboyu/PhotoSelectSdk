@@ -1,0 +1,1 @@
+include ':app', ':photosdk_lib'
