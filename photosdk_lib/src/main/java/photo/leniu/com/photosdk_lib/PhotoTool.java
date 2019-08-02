@@ -2,11 +2,14 @@ package photo.leniu.com.photosdk_lib;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -115,28 +118,32 @@ public class PhotoTool extends Activity {
      * 相机调用
      */
     public void cameraCapture() {
-        Intent intent;
-        Uri pictureUri;
-        File pictureFile = new File(PHOTO, IMAGE_FILE_NAME);
-        // 判断当前系统
-        Log.e(TAG,"VERSION.SDK_INT======>"+Build.VERSION.SDK_INT);
-        if (Build.VERSION.SDK_INT >= 24) {
-            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            //临时访问读权限 intent的接受者将被授予 INTENT 数据uri 或者 在ClipData 上的读权限。
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            //""中的内容是随意的，但最好用package名.provider名的形式，清晰明了
-            Log.e(TAG,"getPackageName======>"+Tool.getPackageName(mActivity));
-            pictureUri = FileProvider.getUriForFile(mActivity,
-                    Tool.getPackageName(mActivity) +".fileprovider", pictureFile);
-            pn = Tool.getPackageName(mActivity);
+        if (!notHasLightSensorManager(mActivity)) {
+            Intent intent;
+            Uri pictureUri;
+            File pictureFile = new File(PHOTO, IMAGE_FILE_NAME);
+            // 判断当前系统
+            Log.e(TAG, "VERSION.SDK_INT======>" + Build.VERSION.SDK_INT);
+            if (Build.VERSION.SDK_INT >= 24) {
+                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                //临时访问读权限 intent的接受者将被授予 INTENT 数据uri 或者 在ClipData 上的读权限。
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                //""中的内容是随意的，但最好用package名.provider名的形式，清晰明了
+                Log.e(TAG, "getPackageName======>" + Tool.getPackageName(mActivity));
+                pictureUri = FileProvider.getUriForFile(mActivity,
+                        Tool.getPackageName(mActivity) + ".fileprovider", pictureFile);
+                pn = Tool.getPackageName(mActivity);
+            } else {
+                intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                pictureUri = Uri.fromFile(pictureFile);
+            }
+            // 去拍照,拍照的结果存到pictureUri对应的路径中
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
+            Log.e(TAG, "before take photo" + pictureUri.toString());
+            mActivity.startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
         } else {
-            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            pictureUri = Uri.fromFile(pictureFile);
+            Toast.makeText(mActivity,"模拟器无法调用相机",Toast.LENGTH_SHORT).show();
         }
-        // 去拍照,拍照的结果存到pictureUri对应的路径中
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, pictureUri);
-        Log.e(TAG,"before take photo"+pictureUri.toString());
-        mActivity.startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
     }
 
     /**
@@ -314,6 +321,21 @@ public class PhotoTool extends Activity {
         matrix.postScale(sx, sy); // 长和宽放大缩小的比例
         Bitmap resizeBmp = Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
         return resizeBmp;
+    }
+
+    /**
+     * 模拟器判断，true为模拟器，false为真机
+     * @param context
+     * @return
+     */
+    public static Boolean notHasLightSensorManager(Context context) {
+        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        Sensor sensor8 = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT); //光
+        if (null == sensor8) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
