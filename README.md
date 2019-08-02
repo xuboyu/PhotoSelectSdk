@@ -1,5 +1,5 @@
 # PhotoSelectSdk
-Android端相册和相机集成SDK，可用于头像功能。
+Android端相册和相机集成SDK，可用于头像功能
 
 提供三个接口调用：
 （1）弹窗调用
@@ -14,7 +14,7 @@ Android端相册和相机集成SDK，可用于头像功能。
 <img src="img/main.png" width="250">
 
 #### 弹窗调用
-#### 可自定义传入弹窗title，content，显示自定义的标题和内容。
+#### 可自定义传入弹窗title，content，显示自定义的标题和内容
 #### demo调用代码
 <img src="img/dialog_code.png" width="700">
 
@@ -48,6 +48,16 @@ Android端相册和相机集成SDK，可用于头像功能。
 <img src="img/a.png" width="700">
 
 ### 动态权限
-#### 如有实现动态权限，可省略示例代码中关于权限的判断及调用。
+#### 如有实现动态权限，可省略示例代码中关于权限的判断及调用
 #### demo代码块
 <img src="img/r.png" width="700">
+
+## 2019-8-2 更新：
+#### 处理问题bug，因模拟器存在无相机的情况导致闪退发生，故相机接口调用增加模拟器判读
+<img src="img/bug.png" width="700">
+
+#### 通过光感器判断模拟器，true为模拟器，false为真机
+<img src="img/mnq.png" width="700">
+
+#### 测试截图，模拟器toast提示，真机正常调用
+<img src="img/bug1.png" width="300">
